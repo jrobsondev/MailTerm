@@ -10,7 +10,8 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
 {
     private TcpListener? _tcpListener { get; set; }
 
-    public async Task StartServerAsync(string hostAddress, int port, CancellationToken cancellationToken)
+    public async Task StartServerAsync(string hostAddress, int port, string attachmentsSaveFilePath,
+        CancellationToken cancellationToken)
     {
         var ipAddress = IPAddress.Parse(hostAddress);
         _tcpListener = new(ipAddress, port);
@@ -21,7 +22,7 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
             while (cancellationToken.IsCancellationRequested is false)
             {
                 var client = await _tcpListener.AcceptTcpClientAsync(cancellationToken);
-                _ = ProcessClientAsync(client);
+                _ = ProcessClientAsync(client, attachmentsSaveFilePath);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -37,7 +38,7 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
         }
     }
 
-    private async Task ProcessClientAsync(TcpClient client)
+    private async Task ProcessClientAsync(TcpClient client, string attachmentsSaveFilePath)
     {
         var isDataCommandReceived = false;
         var dataBuilder = new StringBuilder();
@@ -75,12 +76,11 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
                                     continue;
                                 }
 
-                                var fileName = Path.Combine(Directory.GetCurrentDirectory(), "Attachments",
-                                    mimePart.FileName);
+                                var fileName = Path.Combine(attachmentsSaveFilePath, mimePart.FileName);
 
-                                if (Directory.Exists(fileName) is false)
+                                if (Directory.Exists(attachmentsSaveFilePath) is false)
                                 {
-                                    Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+                                    Directory.CreateDirectory(attachmentsSaveFilePath);
                                 }
 
                                 if (File.Exists(fileName))
