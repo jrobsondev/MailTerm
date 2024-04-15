@@ -1,12 +1,13 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using MailTerm.Console.Managers;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 
 namespace MailTerm.Console;
 
-public class SmtpServer(ILogger<SmtpServer> _logger)
+public class SmtpServer(ILogger<SmtpServer> _logger, MailManager _mailManager)
 {
     private TcpListener? _tcpListener { get; set; }
 
@@ -29,12 +30,12 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
         }
         catch (OperationCanceledException operationCanceledException)
         {
-            _logger.LogCritical("Program has been suspended");
+            //_logger.LogCritical("Program has been suspended");
         }
         finally
         {
             _tcpListener.Stop();
-            _logger.LogInformation("Smtp Server stopped");
+            //_logger.LogInformation("Smtp Server stopped");
         }
     }
 
@@ -49,21 +50,21 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
             using var reader = new StreamReader(networkStream);
             await using var writer = new StreamWriter(networkStream) { AutoFlush = true };
 
-            _logger.LogInformation("Client connected");
+            //_logger.LogInformation("Client connected");
             await writer.WriteLineAsync($"220 {_tcpListener.LocalEndpoint} MailTerm Server");
 
             while (true)
             {
                 var line = await reader.ReadLineAsync();
-                _logger.LogInformation("Received: {Line}", line);
+                //_logger.LogInformation("Received: {Line}", line);
 
                 if (isDataCommandReceived)
                 {
                     if (line.Equals("."))
                     {
                         isDataCommandReceived = false;
-                        _logger.LogInformation("End of data");
-                        _logger.LogInformation(dataBuilder.ToString());
+                        ////_logger.LogInformation("End of data");
+                        ////_logger.LogInformation(dataBuilder.ToString());
                         try
                         {
                             var emailData = dataBuilder.ToString();
@@ -85,18 +86,19 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
 
                                 if (File.Exists(fileName))
                                 {
-                                    _logger.LogWarning("{FilePath} already exists. Overwriting with new attachment",
-                                        fileName);
+                                    ////_logger.LogWarning("{FilePath} already exists. Overwriting with new attachment",
+                                    //  fileName);
                                 }
 
                                 await using var fileStream = File.Create(fileName);
                                 await mimePart.Content.DecodeToAsync(fileStream);
-                                _logger.LogInformation("Attachment saved: {FileName}", fileName);
+                                _mailManager.ConvertStringToEmailAndAddToQueue(dataBuilder.ToString(), fileName);
+                                //_logger.LogInformation("Attachment saved: {FileName}", fileName);
                             }
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError("Failed to process email data: {ExMessage}", ex.Message);
+                            //_logger.LogError("Failed to process email data: {ExMessage}", ex.Message);
                         }
 
                         dataBuilder.Clear();
@@ -130,7 +132,7 @@ public class SmtpServer(ILogger<SmtpServer> _logger)
         }
         catch (Exception ex)
         {
-            _logger.LogError("Client processing failed: {ExMessage}", ex.Message);
+            //_logger.LogError("Client processing failed: {ExMessage}", ex.Message);
         }
         finally
         {
