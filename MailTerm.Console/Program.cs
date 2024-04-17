@@ -1,6 +1,8 @@
 ﻿using CommandLine;
 using MailTerm.Console;
-using MailTerm.Console.Managers;
+using MailTerm.Server;
+using MailTerm.Server.Interfaces;
+using MailTerm.Server.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -23,7 +25,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
                 }).WithNotParsed(errors => { Environment.Exit(0); });
 
             services.AddHostedService<Worker>();
-            services.AddSingleton<SmtpServer>();
-            services.AddSingleton<MailManager>();
+            services.AddSingleton<ISmtpServer, SmtpServer>();
+            services.AddSingleton<IMailManager, MailManager>();
             services.AddSingleton(commandLineOptions);
         });

@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MailTerm.Console", "MailTerm.Console\MailTerm.Console.csproj", "{05A4F851-1018-410F-AFEF-47A209FE2EF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MailTerm.Server", "MailTerm.Server\MailTerm.Server.csproj", "{DD028530-2D5D-402A-8301-8E58133E684A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{05A4F851-1018-410F-AFEF-47A209FE2EF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05A4F851-1018-410F-AFEF-47A209FE2EF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05A4F851-1018-410F-AFEF-47A209FE2EF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD028530-2D5D-402A-8301-8E58133E684A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD028530-2D5D-402A-8301-8E58133E684A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD028530-2D5D-402A-8301-8E58133E684A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD028530-2D5D-402A-8301-8E58133E684A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

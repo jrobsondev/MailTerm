@@ -11,8 +11,11 @@
         <PackageReference Include="CommandLineParser" Version="2.9.1"/>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0"/>
-        <PackageReference Include="MimeKit" Version="4.4.0"/>
         <PackageReference Include="Spectre.Console" Version="0.48.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\MailTerm.Server\MailTerm.Server.csproj"/>
     </ItemGroup>
 
 </Project>

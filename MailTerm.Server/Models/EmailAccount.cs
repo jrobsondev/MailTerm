@@ -1,7 +1,7 @@
-using MailTerm.Console.Interfaces;
+using MailTerm.Server.Interfaces;
 using MimeKit;
 
-namespace MailTerm.Console.Models;
+namespace MailTerm.Server.Models;
 
 public class EmailAccount : IEmailAccount
 {

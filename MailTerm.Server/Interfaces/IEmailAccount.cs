@@ -1,4 +1,4 @@
-namespace MailTerm.Console.Interfaces;
+namespace MailTerm.Server.Interfaces;
 
 public interface IEmailAccount
 {

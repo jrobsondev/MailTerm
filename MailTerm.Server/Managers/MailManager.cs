@@ -1,12 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Text;
-using MailTerm.Console.Interfaces;
-using MailTerm.Console.Models;
+using MailTerm.Server.Interfaces;
+using MailTerm.Server.Models;
 using MimeKit;
 
-namespace MailTerm.Console.Managers;
+namespace MailTerm.Server.Managers;
 
-public class MailManager
+public class MailManager : IMailManager
 {
     public ObservableCollection<IEmail> EmailQueue { get; } = new();
 
