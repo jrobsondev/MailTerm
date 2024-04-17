@@ -1,5 +1,6 @@
 ﻿using CommandLine;
 using MailTerm.Console;
+using MailTerm.Console.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

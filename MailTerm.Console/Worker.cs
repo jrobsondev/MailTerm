@@ -26,7 +26,9 @@ public class Worker(
         _logger.LogInformation("Stopping worker");
     }
 
-    private void EmailQueueChanged(object? o, NotifyCollectionChangedEventArgs args)
+    private void EmailQueueChanged(object? o, NotifyCollectionChangedEventArgs args) => UpdateTable();
+
+    private void UpdateTable()
     {
         AnsiConsole.Clear();
 
@@ -34,13 +36,17 @@ public class Worker(
 
         table.AddColumn("From");
         table.AddColumn("To");
-        table.AddColumn("Subj.");
+        table.AddColumn("Subject");
         table.AddColumn("Body");
-        table.AddColumn("Att.");
+        table.AddColumn("Attachments");
 
         foreach (var email in _mailManager.EmailQueue)
         {
-            table.AddRow(email.From.Name, email.To.Name, email.Subject, email.Body, email.HasAttachment.ToString());
+            table.AddRow(new Text(email.From.Name),
+                new Text(email.To.Name),
+                new Text(email.Subject),
+                new Text(email.Body),
+                new Markup($"file://{email.AttachmentPath}"));
         }
 
         AnsiConsole.Write(table);
