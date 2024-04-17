@@ -5,6 +5,7 @@ using MailTerm.Server.Interfaces;
 using MailTerm.Server.Managers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 await CreateHostBuilder(args)
     .Build()
@@ -13,6 +14,7 @@ return;
 
 static IHostBuilder CreateHostBuilder(string[] args)
     => Host.CreateDefaultBuilder(args)
+        .ConfigureLogging((ctx, b) => b.SetMinimumLevel(LogLevel.Warning))
         .ConfigureServices(services =>
         {
             var commandLineOptions = new CommandLineOptions();

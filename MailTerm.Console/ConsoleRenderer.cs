@@ -1,10 +1,9 @@
-using System.Collections.Specialized;
 using MailTerm.Server.Interfaces;
 using Spectre.Console;
 
 namespace MailTerm.Console;
 
-record Option(string Text, Action Action);
+internal record Option(string Text, Action Action);
 
 public class ConsoleRenderer
 {
@@ -13,21 +12,28 @@ public class ConsoleRenderer
     public ConsoleRenderer(IMailManager mailManager)
     {
         _mailManager = mailManager;
-        _mailManager.EmailQueue.CollectionChanged += EmailQueueChanged;
+        _mailManager.EmailQueue.CollectionChanged += (sender, args) => RefreshConsole();
+        RefreshConsole();
     }
 
-    private void EmailQueueChanged(object? o, NotifyCollectionChangedEventArgs args) => RefreshConsole();
-
-    private void RefreshConsole()
+    public void RefreshConsole()
     {
+        AnsiConsole.Clear();
+        var hasMail = _mailManager.EmailQueue.Any();
+        if (!hasMail)
+        {
+            AnsiConsole.Write(new FigletText("MailTerm").LeftJustified().Color(Color.Yellow));
+        }
+
         UpdateEmailTable();
-        CreateOptions();
+        if (hasMail)
+        {
+            CreateOptions();
+        }
     }
 
     private void UpdateEmailTable()
     {
-        AnsiConsole.Clear();
-
         var table = new Table();
 
         table.AddColumn("From");
@@ -61,7 +67,7 @@ public class ConsoleRenderer
             new SelectionPrompt<Option>()
                 .AddChoices([
                     new("Refresh", RefreshConsole),
-                    new("Clear Emails", () => _mailManager.ClearEmails())
+                    new("Clear Emails", _mailManager.ClearEmails)
                 ])
                 .UseConverter(x => x.Text));
 

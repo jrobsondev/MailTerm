@@ -6,18 +6,15 @@ namespace MailTerm.Console;
 
 public class Worker(
     ILogger<Worker> _logger,
-    ISmtpServer _server,
+    ISmtpServer _smtpServer,
     CommandLineOptions _commandLineOptions,
     IMailManager _mailManager)
     : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting worker");
-        var _ = new ConsoleRenderer(_mailManager);
-        await _server.StartServerAsync("127.0.0.1", _commandLineOptions.Port,
-            _commandLineOptions.AttachmentFilePath!,
-            cancellationToken);
-        _logger.LogInformation("Stopping worker");
+        var _ = new ConsoleRenderer(_smtpServer, _mailManager, _commandLineOptions, cancellationToken);
+        await _smtpServer.StartServerAsync("127.0.0.1", _commandLineOptions.Port,
+            _commandLineOptions.AttachmentFilePath!, cancellationToken);
     }
 }
