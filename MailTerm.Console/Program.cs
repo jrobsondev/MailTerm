@@ -18,7 +18,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
         .ConfigureServices(services =>
         {
             var commandLineOptions = new CommandLineOptions();
-            Parser.Default.ParseArguments<CommandLineOptions>(new[] { "-a /Users/jake/Desktop" })
+            Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .WithParsed(o =>
                 {
                     var path = o.AttachmentFilePath ?? Path.Combine(Directory.GetCurrentDirectory(), "Attachments");
