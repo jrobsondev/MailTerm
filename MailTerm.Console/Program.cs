@@ -28,6 +28,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 
             services.AddHostedService<Worker>();
             services.AddSingleton<ISmtpServer, SmtpServer>();
+            services.AddSingleton<ISmtpCommandHandler, SmtpCommandHandler>();
             services.AddSingleton<IMailManager, MailManager>();
             services.AddSingleton(commandLineOptions);
         });

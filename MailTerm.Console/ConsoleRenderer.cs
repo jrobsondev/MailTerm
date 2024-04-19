@@ -9,15 +9,21 @@ public class ConsoleRenderer
 {
     private readonly IMailManager _mailManager;
 
-    public ConsoleRenderer(IMailManager mailManager)
+    private CancellationTokenSource? _cts;
+
+    public ConsoleRenderer(IMailManager mailManager, ISmtpServer smtpServer)
     {
         _mailManager = mailManager;
-        _mailManager.EmailQueue.CollectionChanged += (sender, args) => RefreshConsole();
-        RefreshConsole();
+        smtpServer.EmailReceived += async (sender, args) => await RefreshConsoleAsync();
     }
 
-    public void RefreshConsole()
+    public async Task RefreshConsoleAsync()
     {
+        if (_cts is not null)
+        {
+            await _cts.CancelAsync();
+        }
+
         AnsiConsole.Clear();
         var hasMail = _mailManager.EmailQueue.Any();
         if (!hasMail)
@@ -28,7 +34,7 @@ public class ConsoleRenderer
         UpdateEmailTable();
         if (hasMail)
         {
-            CreateOptions();
+            await CreateOptions();
         }
     }
 
@@ -54,7 +60,7 @@ public class ConsoleRenderer
         AnsiConsole.Write(table);
     }
 
-    private void CreateOptions()
+    private async Task CreateOptions()
     {
         var rule = new Rule("Options")
         {
@@ -63,14 +69,28 @@ public class ConsoleRenderer
 
         AnsiConsole.Write(rule);
 
-        var selection = AnsiConsole.Prompt(
-            new SelectionPrompt<Option>()
+        _cts = new();
+        try
+        {
+            var selection = await new SelectionPrompt<Option>()
                 .AddChoices([
-                    new("Refresh", RefreshConsole),
-                    new("Clear Emails", _mailManager.ClearEmails)
+                    new("Refresh", async () => await RefreshConsoleAsync()),
+                    new("Clear Emails", async () => await ClearEmailsAsync())
                 ])
-                .UseConverter(x => x.Text));
+                .UseConverter(x => x.Text)
+                .ShowAsync(AnsiConsole.Console, _cts.Token);
 
-        selection.Action();
+            selection?.Action();
+        }
+        catch (TaskCanceledException ex)
+        {
+            //Need to catch cancellation exceptions as we don't mind them
+        }
+    }
+
+    private async Task ClearEmailsAsync()
+    {
+        _mailManager.ClearEmails();
+        await RefreshConsoleAsync();
     }
 }

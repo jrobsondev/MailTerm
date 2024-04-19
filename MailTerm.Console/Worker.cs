@@ -13,7 +13,8 @@ public class Worker(
 {
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        var _ = new ConsoleRenderer(_smtpServer, _mailManager, _commandLineOptions, cancellationToken);
+        var cr = new ConsoleRenderer(_mailManager, _smtpServer);
+        await cr.RefreshConsoleAsync();
         await _smtpServer.StartServerAsync("127.0.0.1", _commandLineOptions.Port,
             _commandLineOptions.AttachmentFilePath!, cancellationToken);
     }
